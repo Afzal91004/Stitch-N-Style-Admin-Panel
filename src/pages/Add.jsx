@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Check, Camera, ImagePlus } from "lucide-react";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
@@ -86,19 +86,20 @@ const Add = ({ token }) => {
   const renderUploadBox = (id) => {
     if (imagePreviews[id]) {
       return (
-        <div className="relative w-28 h-28 group">
+        <div className="relative w-32 h-32 group">
           <img
             src={imagePreviews[id]}
             alt="Preview"
-            className="w-full h-full object-cover rounded-xl border-2 border-pink-500"
+            className="w-full h-full object-cover rounded-xl border-2 border-pink-500 shadow-md"
           />
           <button
             onClick={() => removeImage(id)}
-            className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             type="button"
           >
-            <X className="w-4 h-4 text-pink-500" />
+            <X className="w-4 h-4 text-pink-600" />
           </button>
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-xl transition-all duration-300"></div>
         </div>
       );
     }
@@ -106,11 +107,11 @@ const Add = ({ token }) => {
     return (
       <label
         htmlFor={id}
-        className="flex flex-col items-center justify-center w-28 h-28 border-2 border-dashed border-gray-300 rounded-xl hover:border-pink-500 hover:bg-pink-50/30 transition-all duration-300 cursor-pointer group"
+        className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-xl hover:border-pink-500 hover:bg-pink-50/30 transition-all duration-300 cursor-pointer group"
       >
-        <Upload className="w-6 h-6 text-gray-400 group-hover:text-pink-500 transition-colors duration-300" />
-        <span className="mt-2 text-sm text-gray-500 group-hover:text-pink-500 transition-colors duration-300">
-          Upload
+        <ImagePlus className="w-8 h-8 text-gray-400 group-hover:text-pink-500 transition-colors duration-300" />
+        <span className="mt-2 text-sm font-medium text-gray-500 group-hover:text-pink-500 transition-colors duration-300">
+          Add Image
         </span>
         <input
           onChange={(e) => handleImageChange(e, id)}
@@ -229,16 +230,17 @@ const Add = ({ token }) => {
   const sizes = ["S", "M", "L", "XL"];
 
   return (
-    <div className="w-full max-w-3xl mx-auto my-8 bg-white rounded-2xl shadow-xl">
-      <div className="p-8 border-b border-gray-200">
-        <h2 className="text-2xl font-semibold text-gray-800">
+    <div className="w-full max-w-4xl mx-auto my-8 bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div className="p-8 border-b border-gray-200 bg-gradient-to-r from-pink-500 to-pink-600">
+        <h2 className="text-2xl font-bold text-white flex items-center">
+          <Camera className="mr-3 w-6 h-6" />
           Add New Product
         </h2>
       </div>
 
       <div className="p-8">
         <form onSubmit={onSubmitHandler} className="space-y-8">
-          <div className="space-y-3">
+          <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
               Product Images
             </label>
@@ -263,7 +265,7 @@ const Add = ({ token }) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter product name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 shadow-sm"
                 required
               />
             </div>
@@ -275,15 +277,20 @@ const Add = ({ token }) => {
               >
                 Price
               </label>
-              <input
-                id="price"
-                type="text"
-                value={price}
-                onChange={handlePriceChange}
-                placeholder="0.00"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300"
-                required
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
+                  $
+                </span>
+                <input
+                  id="price"
+                  type="text"
+                  value={price}
+                  onChange={handlePriceChange}
+                  placeholder="0.00"
+                  className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 shadow-sm"
+                  required
+                />
+              </div>
             </div>
           </div>
 
@@ -299,7 +306,7 @@ const Add = ({ token }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Write product description here..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 min-h-[120px] resize-y"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 min-h-[120px] resize-y shadow-sm"
               required
             />
           </div>
@@ -309,30 +316,60 @@ const Add = ({ token }) => {
               <label className="block text-sm font-medium text-gray-700">
                 Category
               </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 bg-white appearance-none"
-              >
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-                <option value="Kids">Kids</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 bg-white appearance-none shadow-sm"
+                >
+                  <option value="Men">Men</option>
+                  <option value="Women">Women</option>
+                  <option value="Kids">Kids</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Sub-Category
               </label>
-              <select
-                value={subCategory}
-                onChange={(e) => setSubCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 bg-white appearance-none"
-              >
-                <option value="Top-Wear">Top Wear</option>
-                <option value="Bottom-Wear">Bottom Wear</option>
-                <option value="Winter-Wear">Winter Wear</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={subCategory}
+                  onChange={(e) => setSubCategory(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-300 bg-white appearance-none shadow-sm"
+                >
+                  <option value="Top-Wear">Top Wear</option>
+                  <option value="Bottom-Wear">Bottom Wear</option>
+                  <option value="Winter-Wear">Winter Wear</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -348,7 +385,7 @@ const Add = ({ token }) => {
                   onClick={() => toggleSize(size)}
                   className={`w-12 h-12 rounded-xl font-medium transition-all duration-300 ${
                     selectedSizes.includes(size)
-                      ? "bg-pink-500 text-white shadow-lg shadow-pink-200"
+                      ? "bg-pink-600 text-white shadow-lg shadow-pink-200"
                       : "bg-gray-100 text-gray-600 hover:bg-pink-100"
                   }`}
                 >
@@ -359,31 +396,42 @@ const Add = ({ token }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="bestseller"
-              checked={bestSeller}
-              onChange={(e) => setBestSeller(e.target.checked)}
-              className="w-5 h-5 rounded border-gray-300 text-pink-500 focus:ring-pink-500 transition-colors cursor-pointer"
-            />
-            <label
-              htmlFor="bestseller"
-              className="text-sm font-medium text-gray-700 cursor-pointer"
-            >
-              Add to BestSeller
-            </label>
+            <div className="relative flex items-center">
+              <input
+                type="checkbox"
+                id="bestseller"
+                checked={bestSeller}
+                onChange={(e) => setBestSeller(e.target.checked)}
+                className="w-5 h-5 rounded border-gray-300 text-pink-600 focus:ring-pink-500 transition-colors cursor-pointer"
+              />
+              <label
+                htmlFor="bestseller"
+                className="ml-2 text-sm font-medium text-gray-700 cursor-pointer"
+              >
+                Add to BestSeller
+              </label>
+              {bestSeller && (
+                <span className="absolute -right-2 -top-2">
+                  <Check className="w-4 h-4 text-pink-500" />
+                </span>
+              )}
+            </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`px-8 py-3 bg-pink-500 text-white font-medium rounded-xl transition-all duration-300 shadow-lg shadow-pink-200 hover:shadow-pink-300 
-              ${
-                loading ? "opacity-50 cursor-not-allowed" : "hover:bg-pink-600"
-              }`}
-          >
-            {loading ? "Adding Product..." : "Add Product"}
-          </button>
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className={`px-8 py-3.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-pink-300 w-full md:w-auto
+                ${
+                  loading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:from-pink-500 hover:to-pink-600"
+                }`}
+            >
+              {loading ? "Adding Product..." : "Add Product"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

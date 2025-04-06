@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl, currency } from "../App";
-import { Trash2, Edit2, X } from "lucide-react";
+import { Trash2, Edit2, X, Search, Tag, ShoppingBag } from "lucide-react";
 import { toast } from "react-toastify";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -33,6 +34,8 @@ const List = ({ token }) => {
     } catch (error) {
       console.error(error);
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -171,27 +174,47 @@ const List = ({ token }) => {
   }, []);
 
   return (
-    <div className="w-full bg-white p-6 rounded-lg shadow-sm border">
-      <h2 className="text-2xl font-semibold mb-6">Products List</h2>
+    <div className="w-full bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b border-gray-100">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-pink-600">
+            Products Inventory
+          </h2>
+          <p className="text-gray-500 mt-1">Manage your product catalog</p>
+        </div>
+
+        <div className="mt-4 md:mt-0 flex items-center">
+          <div className="bg-gray-50 rounded-xl p-1 flex items-center shadow-sm border border-gray-100">
+            <Search className="h-4 w-4 text-gray-400 ml-2" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="bg-transparent border-none focus:ring-0 text-sm px-2 py-1 w-40 md:w-auto"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Edit Modal */}
       {editingProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Edit Product</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b">
+              <h3 className="text-xl font-bold text-indigo-600">
+                Edit Product
+              </h3>
               <button
                 onClick={() => setEditingProduct(null)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 text-gray-500 hover:text-gray-700"
                 title="Close"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleUpdate} className="space-y-4">
+            <form onSubmit={handleUpdate} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Name
                 </label>
                 <input
@@ -200,13 +223,13 @@ const List = ({ token }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Description
                 </label>
                 <textarea
@@ -214,31 +237,36 @@ const List = ({ token }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm"
                   rows="3"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Price
                   </label>
-                  <input
-                    type="text"
-                    value={formData.price}
-                    onChange={handlePriceChange}
-                    pattern="^\d+$"
-                    inputMode="numeric"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    required
-                    placeholder="Enter Price"
-                  />
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                      {currency}
+                    </span>
+                    <input
+                      type="text"
+                      value={formData.price}
+                      onChange={handlePriceChange}
+                      pattern="^\d+$"
+                      inputMode="numeric"
+                      className="w-full rounded-xl border border-gray-300 pl-8 pr-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm"
+                      required
+                      placeholder="0.00"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Category
                   </label>
                   <input
@@ -247,14 +275,14 @@ const List = ({ token }) => {
                     onChange={(e) =>
                       setFormData({ ...formData, category: e.target.value })
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Sub Category
                 </label>
                 <input
@@ -263,7 +291,7 @@ const List = ({ token }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, subCategory: e.target.value })
                   }
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm"
                 />
               </div>
 
@@ -271,27 +299,32 @@ const List = ({ token }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Images
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[1, 2, 3, 4].map((num) => (
                     <div key={num} className="space-y-2">
-                      <input
-                        type="file"
-                        name={`image${num}`}
-                        accept="image/*"
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                      />
-                      {editingProduct.image[num - 1] && (
-                        <div className="relative group">
-                          <img
-                            src={editingProduct.image[num - 1]}
-                            alt={`Current ${num}`}
-                            className="h-20 w-20 object-cover rounded"
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded flex items-center justify-center text-white text-sm">
-                            Current Image
+                      <div className="relative group">
+                        <input
+                          type="file"
+                          name={`image${num}`}
+                          accept="image/*"
+                          className="block w-full text-sm text-gray-500 
+                            file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 
+                            file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 
+                            hover:file:bg-indigo-100 cursor-pointer"
+                        />
+                        {editingProduct.image[num - 1] && (
+                          <div className="mt-2 relative group rounded-lg overflow-hidden">
+                            <img
+                              src={editingProduct.image[num - 1]}
+                              alt={`Current ${num}`}
+                              className="h-24 w-full object-cover rounded-lg border border-indigo-100"
+                            />
+                            <div className="absolute inset-0 bg-indigo-900 bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center text-white text-sm">
+                              Current Image
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -305,7 +338,7 @@ const List = ({ token }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, bestSeller: e.target.checked })
                   }
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <label
                   htmlFor="bestSeller"
@@ -315,17 +348,17 @@ const List = ({ token }) => {
                 </label>
               </div>
 
-              <div className="flex justify-end gap-4 mt-6 pt-4 border-t">
+              <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
                 <button
                   type="button"
                   onClick={() => setEditingProduct(null)}
-                  className="px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors duration-200"
+                  className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200 shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-colors duration-200 shadow-md"
                 >
                   Update Product
                 </button>
@@ -336,69 +369,80 @@ const List = ({ token }) => {
       )}
 
       {/* Table Header */}
-      <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-4 items-center p-4 bg-gray-50 rounded-lg mb-4">
-        <span className="font-medium text-gray-600">Image</span>
-        <span className="font-medium text-gray-600">Name</span>
-        <span className="font-medium text-gray-600">Category</span>
-        <span className="font-medium text-gray-600">Price</span>
-        <span className="font-medium text-gray-600 text-center">Actions</span>
+      <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-4 items-center p-4 bg-gray-50 rounded-xl mb-6 font-medium text-gray-600 text-sm">
+        <span>Image</span>
+        <span>Name</span>
+        <span>Category</span>
+        <span>Price</span>
+        <span className="text-center">Actions</span>
       </div>
 
       {/* Product List */}
       <div className="flex flex-col gap-4">
-        {list.map((item, index) => (
-          <div
-            key={index}
-            className="grid md:grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-4 items-center p-4 bg-white rounded-lg border hover:bg-gray-50 transition-colors duration-200"
-          >
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-              <img
-                src={item.image[0]}
-                alt={item.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium text-gray-900">{item.name}</h3>
-              <p className="text-sm text-gray-500 md:hidden">
-                Category: {item.category}
-              </p>
-              <p className="text-sm text-gray-500 md:hidden">
-                Price: {currency}
-                {item.price}
-              </p>
-            </div>
-            <p className="hidden md:block text-gray-600">{item.category}</p>
-            <p className="hidden md:block text-gray-600">
-              {currency}
-              {item.price}
-            </p>
-            <div className="flex justify-center gap-2">
-              {/* <button
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
-                title="Edit product"
-                onClick={() => handleEdit(item)}
-              >
-                <Edit2 size={20} />
-              </button> */}
-              <button
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                title="Delete product"
-                onClick={() => removeProduct(item._id)}
-              >
-                <Trash2 size={20} />
-              </button>
-            </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-10 h-10 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
           </div>
-        ))}
-      </div>
+        ) : (
+          list.map((item, index) => (
+            <div
+              key={index}
+              className="grid md:grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-4 items-center p-5 bg-white rounded-xl border border-gray-100 hover:border-indigo-100 hover:shadow-md transition-all duration-300"
+            >
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+                <img
+                  src={item.image[0]}
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-medium text-gray-900 flex items-center">
+                  {item.name}
+                  {item.bestSeller && (
+                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                      Best Seller
+                    </span>
+                  )}
+                </h3>
+                <p className="text-sm text-gray-500 md:hidden flex items-center gap-1">
+                  <Tag className="h-3 w-3" /> {item.category}
+                </p>
+                <p className="text-sm text-gray-500 md:hidden flex items-center gap-1">
+                  <span>{currency}</span> {item.price}
+                </p>
+              </div>
 
-      {/* Empty State */}
-      {list.length === 0 && (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">No products found</p>
-        </div>
-      )}
+              <div className="hidden md:flex items-center">
+                <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-medium">
+                  {item.category}
+                </span>
+              </div>
+
+              <p className="hidden md:block font-medium text-gray-700">
+                {currency} {item.price}
+              </p>
+
+              <div className="flex justify-center gap-3">
+                {/* <button
+                  className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200"
+                  title="Edit product"
+                  onClick={() => handleEdit(item)}
+                >
+                  <Edit2 size={18} />
+                </button> */}
+                <button
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 border border-transparent hover:border-red-100"
+                  title="Delete product"
+                  onClick={() => removeProduct(item._id)}
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

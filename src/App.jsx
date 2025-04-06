@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/Orders";
@@ -19,29 +19,57 @@ const App = () => {
 
   useEffect(() => {
     localStorage.setItem("token", token);
-  }, [token]); // Add token as dependency
+  }, [token]);
+
+  if (token === "") {
+    return (
+      <>
+        <Login setToken={setToken} />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </>
+    );
+  }
 
   return (
-    <>
-      {token === "" ? (
-        <Login setToken={setToken} />
-      ) : (
-        <>
-          <Header setToken={setToken} />
-          <div className="flex">
-            <Sidebar />
-            <div className="flex-1 p-4">
-              <Routes>
-                <Route path="/add" element={<Add token={token} />} />
-                <Route path="/list" element={<List token={token} />} />
-                <Route path="/orders" element={<Orders token={token} />} />
-              </Routes>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <Header setToken={setToken} />
+      <div className="flex">
+        <Sidebar />
+        <div className={`flex-1 p-6 ml-64 mt-16 transition-all duration-300`}>
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <Routes>
+              <Route path="/" element={<Navigate to="/add" replace />} />
+              <Route path="/add" element={<Add token={token} />} />
+              <Route path="/list" element={<List token={token} />} />
+              <Route path="/orders" element={<Orders token={token} />} />
+            </Routes>
           </div>
-        </>
-      )}
-      <ToastContainer />
-    </>
+        </div>
+      </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </div>
   );
 };
 
