@@ -279,7 +279,7 @@ const Add = ({ token }) => {
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
-                  $
+                  ₹
                 </span>
                 <input
                   id="price"
