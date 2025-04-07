@@ -16,10 +16,32 @@ const App = () => {
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : ""
   );
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     localStorage.setItem("token", token);
   }, [token]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initialize on mount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   if (token === "") {
     return (
@@ -43,18 +65,29 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header setToken={setToken} />
-      <div className="flex">
-        <Sidebar />
-        <div className={`flex-1 p-6 ml-64 mt-16 transition-all duration-300`}>
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <Routes>
-              <Route path="/" element={<Navigate to="/add" replace />} />
-              <Route path="/add" element={<Add token={token} />} />
-              <Route path="/list" element={<List token={token} />} />
-              <Route path="/orders" element={<Orders token={token} />} />
-            </Routes>
-          </div>
+      <Header
+        setToken={setToken}
+        toggleSidebar={toggleSidebar}
+        isMobile={isMobile}
+        isSidebarOpen={isSidebarOpen}
+      />
+      <div className="flex relative">
+        <Sidebar
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          isMobile={isMobile}
+        />
+        <div
+          className={`flex-1 p-4 sm:p-6 transition-all duration-300 mt-16 ${
+            isMobile ? "ml-0" : isSidebarOpen ? "md:ml-64" : "ml-0"
+          }`}
+        >
+          <Routes>
+            <Route path="/" element={<Navigate to="/add" replace />} />
+            <Route path="/add" element={<Add token={token} />} />
+            <Route path="/list" element={<List token={token} />} />
+            <Route path="/orders" element={<Orders token={token} />} />
+          </Routes>
         </div>
       </div>
       <ToastContainer
