@@ -23,6 +23,7 @@ const List = ({ token }) => {
       const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -32,8 +33,14 @@ const List = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error(error);
-      toast.error(error.message);
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        // Redirect to login or handle token expiration
+        window.location.href = "/login";
+      } else {
+        console.error(error);
+        toast.error(error.response?.data?.message || "Error fetching products");
+      }
     } finally {
       setLoading(false);
     }
@@ -149,12 +156,23 @@ const List = ({ token }) => {
     });
   };
 
+  // Update the removeProduct function
   const removeProduct = async (id) => {
+    if (!token) {
+      toast.error("Authentication required");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${backendUrl}/api/product/remove`,
         { id },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       if (response.data.success) {
@@ -164,14 +182,22 @@ const List = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error(error.message);
-      console.error(error);
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        // Optionally redirect to login
+        // window.location.href = '/login';
+      } else {
+        toast.error(error.response?.data?.message || "Error removing product");
+        console.error(error);
+      }
     }
   };
 
   useEffect(() => {
-    fetchList();
-  }, []);
+    if (token) {
+      fetchList();
+    }
+  }, [token]); // Add token as dependency
 
   return (
     <div className="w-full bg-white p-8 rounded-2xl shadow-lg border border-gray-100">

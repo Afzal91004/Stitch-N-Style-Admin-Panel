@@ -17,18 +17,18 @@ const Orders = ({ token }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchAllOrders = async () => {
-    if (!token) return null;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post(
-        `${backendUrl}/api/order/list`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${backendUrl}/api/order/list`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response.data.success) {
         setOrders(response.data.orders || []);
@@ -36,7 +36,6 @@ const Orders = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -84,7 +83,11 @@ const Orders = ({ token }) => {
   };
 
   useEffect(() => {
-    fetchAllOrders();
+    if (token) {
+      fetchAllOrders();
+    } else {
+      setLoading(false);
+    }
   }, [token]);
 
   return (
