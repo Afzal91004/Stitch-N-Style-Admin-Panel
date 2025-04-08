@@ -233,316 +233,59 @@ const Orders = ({ token }) => {
 
           <div className="space-y-6">
             {orders.length > 0 ? (
-              orders.map((order, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden"
-                >
-                  {/* Mobile Order Header - Always visible */}
-                  <div className="md:hidden p-4 border-b border-gray-100 flex justify-between items-center">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <ShoppingBag className="w-5 h-5 text-pink-500" />
-                        <h3 className="font-semibold text-gray-800">
-                          Order #{order._id?.slice(-5) || index}
-                        </h3>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {new Date(order.date).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => toggleOrderExpand(order._id)}
-                      className="p-2 rounded-full hover:bg-gray-100"
-                    >
-                      {expandedOrders[order._id] ? (
-                        <ChevronUp className="w-5 h-5 text-gray-600" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-600" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Mobile Order Summary - Always visible */}
-                  <div className="md:hidden p-4 flex justify-between items-center border-b border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                      <p className="text-sm">{order.items.length} items</p>
-                    </div>
-                    <p className="font-bold text-amber-600">
-                      {currency} {order.amount}
-                    </p>
-                  </div>
-
-                  {/* Mobile Status Bar - Always visible */}
-                  <div className="md:hidden p-4 border-b border-gray-100">
-                    <div className="flex flex-col gap-2">
-                      <p className="text-sm font-medium text-gray-700 flex justify-between">
-                        <span>Status:</span>
-                        <span className="text-indigo-600">{order.status}</span>
-                      </p>
-                      <div className="w-full h-2 rounded-full bg-gray-100 relative overflow-hidden">
-                        <div
-                          className={`absolute left-0 top-0 h-full ${getStatusColor(
-                            order.status
-                          )}`}
-                          style={{
-                            width:
-                              order.status === "orderPlaced"
-                                ? "20%"
-                                : order.status === "Packing"
-                                ? "40%"
-                                : order.status === "Shipped"
-                                ? "60%"
-                                : order.status === "Out for delivery"
-                                ? "80%"
-                                : "100%",
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Mobile Expanded Content */}
+              orders
+                .slice()
+                .reverse()
+                .map((order, index) => (
                   <div
-                    className={`md:hidden ${
-                      expandedOrders[order._id] ? "block" : "hidden"
-                    }`}
+                    key={index}
+                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden"
                   >
-                    <div className="p-4 border-b border-gray-100">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2">
-                          <Package className="w-5 h-5 text-indigo-500" />
-                          <h3 className="font-semibold text-gray-800">Items</h3>
-                        </div>
-                        <div className="space-y-3 pl-2">
-                          {order.items.map((item, idx) => (
-                            <div key={idx} className="flex items-center gap-3">
-                              <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-gray-800">
-                                  {item.name}{" "}
-                                  <span className="text-indigo-500">×</span>{" "}
-                                  {item.quantity}
-                                </p>
-                                <span className="text-xs px-2 py-1 bg-indigo-50 rounded-full text-indigo-600 font-medium">
-                                  {item.size}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-4 border-b border-gray-100">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2">
-                          <User className="w-5 h-5 text-rose-500" />
+                    {/* Mobile Order Header - Always visible */}
+                    <div className="md:hidden p-4 border-b border-gray-100 flex justify-between items-center">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <ShoppingBag className="w-5 h-5 text-pink-500" />
                           <h3 className="font-semibold text-gray-800">
-                            Delivery Address
+                            Order #{order._id?.slice(-5) || index}
                           </h3>
                         </div>
-                        <div className="space-y-2 pl-2">
-                          <p className="font-medium text-gray-800">
-                            {order.address.firstName} {order.address.lastName}
-                          </p>
-                          <div className="text-sm text-gray-600 space-y-1 pl-2 border-l-2 border-rose-100">
-                            <p>{order.address.streetAddress}</p>
-                            <p>
-                              {order.address.city}, {order.address.state}
-                            </p>
-                            <p>
-                              {order.address.pinCode}, {order.address.country}
-                            </p>
-                          </div>
-                          <p className="text-sm text-gray-600 mt-2 flex items-center gap-2">
-                            <span className="inline-block w-5 h-5 rounded-full bg-rose-50 flex items-center justify-center">
-                              <span className="text-xs text-rose-500">☎</span>
-                            </span>
-                            {order.address.phoneNumber}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-4 border-b border-gray-100">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2">
-                          <ShoppingBag className="w-5 h-5 text-amber-500" />
-                          <h3 className="font-semibold text-gray-800">
-                            Payment
-                          </h3>
-                        </div>
-                        <div className="space-y-2 pl-2">
-                          <p className="flex justify-between text-sm">
-                            <span className="text-gray-600">Method:</span>
-                            <span className="font-medium">
-                              {order.paymentMethod}
-                            </span>
-                          </p>
-                          <p className="flex justify-between text-sm">
-                            <span className="text-gray-600">Status:</span>
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                order.payment
-                                  ? "bg-green-50 text-green-600"
-                                  : "bg-red-50 text-red-600"
-                              }`}
-                            >
-                              {order.payment ? "Paid" : "Pending"}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-4">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2">
-                          <Truck className="w-5 h-5 text-emerald-500" />
-                          <h3 className="font-semibold text-gray-800">
-                            Update Status
-                          </h3>
-                        </div>
-                        <select
-                          className="w-full p-3 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
-                          value={order.status}
-                          onChange={(event) => statusHandler(event, order._id)}
-                        >
-                          <option value="orderPlaced">Order Placed</option>
-                          <option value="Packing">Packing</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Out for delivery">
-                            Out for delivery
-                          </option>
-                          <option value="Delivered">Delivered</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Desktop Layout */}
-                  <div className="hidden md:grid md:grid-cols-4 gap-6 p-6">
-                    {/* Order Items Section */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 border-b pb-3">
-                        <Package className="w-5 h-5 text-indigo-500" />
-                        <h3 className="font-semibold text-gray-800">
-                          Order Items
-                        </h3>
-                      </div>
-                      <div className="space-y-4">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="flex items-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium text-gray-800">
-                                {item.name}{" "}
-                                <span className="text-indigo-500">×</span>{" "}
-                                {item.quantity}
-                              </p>
-                              <span className="text-xs px-2 py-1 bg-indigo-50 rounded-full text-indigo-600 font-medium">
-                                {item.size}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Customer Details Section */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 border-b pb-3">
-                        <User className="w-5 h-5 text-rose-500" />
-                        <h3 className="font-semibold text-gray-800">
-                          Delivery Address
-                        </h3>
-                      </div>
-                      <div className="space-y-3">
-                        <p className="font-medium text-gray-800 flex items-center gap-1">
-                          {order.address.firstName} {order.address.lastName}
-                        </p>
-                        <div className="text-sm text-gray-600 space-y-2 pl-1 border-l-2 border-rose-100 ml-1">
-                          <p>{order.address.streetAddress}</p>
-                          <p>
-                            {order.address.city}, {order.address.state}
-                          </p>
-                          <p>
-                            {order.address.pinCode}, {order.address.country}
-                          </p>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-2 flex items-center gap-2">
-                          <span className="inline-block w-5 h-5 rounded-full bg-rose-50 flex items-center justify-center">
-                            <span className="text-xs text-rose-500">☎</span>
-                          </span>
-                          {order.address.phoneNumber}
+                        <p className="text-sm text-gray-500 mt-1">
+                          {new Date(order.date).toLocaleDateString()}
                         </p>
                       </div>
+                      <button
+                        onClick={() => toggleOrderExpand(order._id)}
+                        className="p-2 rounded-full hover:bg-gray-100"
+                      >
+                        {expandedOrders[order._id] ? (
+                          <ChevronUp className="w-5 h-5 text-gray-600" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-gray-600" />
+                        )}
+                      </button>
                     </div>
 
-                    {/* Order Details Section */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 border-b pb-3">
-                        <ShoppingBag className="w-5 h-5 text-amber-500" />
-                        <h3 className="font-semibold text-gray-800">
-                          Order Info
-                        </h3>
+                    {/* Mobile Order Summary - Always visible */}
+                    <div className="md:hidden p-4 flex justify-between items-center border-b border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                        <p className="text-sm">{order.items.length} items</p>
                       </div>
-                      <div className="space-y-3 text-sm">
-                        <p className="flex justify-between items-center">
-                          <span className="text-gray-600">Total Items:</span>
-                          <span className="font-medium text-gray-800 bg-amber-50 px-2 py-1 rounded">
-                            {order.items.length}
-                          </span>
-                        </p>
-                        <p className="flex justify-between items-center">
-                          <span className="text-gray-600">Payment Method:</span>
-                          <span className="font-medium text-gray-800">
-                            {order.paymentMethod}
-                          </span>
-                        </p>
-                        <p className="flex justify-between items-center">
-                          <span className="text-gray-600">Payment Status:</span>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              order.payment
-                                ? "bg-green-50 text-green-600"
-                                : "bg-red-50 text-red-600"
-                            }`}
-                          >
-                            {order.payment ? "Paid" : "Pending"}
-                          </span>
-                        </p>
-                        <p className="flex justify-between items-center">
-                          <span className="text-gray-600 flex items-center gap-1">
-                            <Calendar className="w-4 h-4 text-amber-500" />{" "}
-                            Date:
-                          </span>
-                          <span className="font-medium text-gray-800">
-                            {new Date(order.date).toLocaleDateString()}
-                          </span>
-                        </p>
-                        <div className="pt-3 mt-3 border-t">
-                          <p className="text-xl font-bold text-gray-800 flex items-center justify-between">
-                            <span>Total:</span>
-                            <span className="text-amber-600">
-                              {currency} {order.amount}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
+                      <p className="font-bold text-amber-600">
+                        {currency} {order.amount}
+                      </p>
                     </div>
 
-                    {/* Status Section */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 border-b pb-3">
-                        <Truck className="w-5 h-5 text-emerald-500" />
-                        <h3 className="font-semibold text-gray-800">
-                          Order Status
-                        </h3>
-                      </div>
+                    {/* Mobile Status Bar - Always visible */}
+                    <div className="md:hidden p-4 border-b border-gray-100">
                       <div className="flex flex-col gap-2">
+                        <p className="text-sm font-medium text-gray-700 flex justify-between">
+                          <span>Status:</span>
+                          <span className="text-indigo-600">
+                            {order.status}
+                          </span>
+                        </p>
                         <div className="w-full h-2 rounded-full bg-gray-100 relative overflow-hidden">
                           <div
                             className={`absolute left-0 top-0 h-full ${getStatusColor(
@@ -562,24 +305,299 @@ const Orders = ({ token }) => {
                             }}
                           ></div>
                         </div>
-                        <select
-                          className="w-full p-3 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
-                          value={order.status}
-                          onChange={(event) => statusHandler(event, order._id)}
-                        >
-                          <option value="orderPlaced">Order Placed</option>
-                          <option value="Packing">Packing</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Out for delivery">
-                            Out for delivery
-                          </option>
-                          <option value="Delivered">Delivered</option>
-                        </select>
+                      </div>
+                    </div>
+
+                    {/* Mobile Expanded Content */}
+                    <div
+                      className={`md:hidden ${
+                        expandedOrders[order._id] ? "block" : "hidden"
+                      }`}
+                    >
+                      <div className="p-4 border-b border-gray-100">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2">
+                            <Package className="w-5 h-5 text-indigo-500" />
+                            <h3 className="font-semibold text-gray-800">
+                              Items
+                            </h3>
+                          </div>
+                          <div className="space-y-3 pl-2">
+                            {order.items.map((item, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center gap-3"
+                              >
+                                <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-800">
+                                    {item.name}{" "}
+                                    <span className="text-indigo-500">×</span>{" "}
+                                    {item.quantity}
+                                  </p>
+                                  <span className="text-xs px-2 py-1 bg-indigo-50 rounded-full text-indigo-600 font-medium">
+                                    {item.size}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-4 border-b border-gray-100">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2">
+                            <User className="w-5 h-5 text-rose-500" />
+                            <h3 className="font-semibold text-gray-800">
+                              Delivery Address
+                            </h3>
+                          </div>
+                          <div className="space-y-2 pl-2">
+                            <p className="font-medium text-gray-800">
+                              {order.address.firstName} {order.address.lastName}
+                            </p>
+                            <div className="text-sm text-gray-600 space-y-1 pl-2 border-l-2 border-rose-100">
+                              <p>{order.address.streetAddress}</p>
+                              <p>
+                                {order.address.city}, {order.address.state}
+                              </p>
+                              <p>
+                                {order.address.pinCode}, {order.address.country}
+                              </p>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-2 flex items-center gap-2">
+                              <span className="inline-block w-5 h-5 rounded-full bg-rose-50 flex items-center justify-center">
+                                <span className="text-xs text-rose-500">☎</span>
+                              </span>
+                              {order.address.phoneNumber}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-4 border-b border-gray-100">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2">
+                            <ShoppingBag className="w-5 h-5 text-amber-500" />
+                            <h3 className="font-semibold text-gray-800">
+                              Payment
+                            </h3>
+                          </div>
+                          <div className="space-y-2 pl-2">
+                            <p className="flex justify-between text-sm">
+                              <span className="text-gray-600">Method:</span>
+                              <span className="font-medium">
+                                {order.paymentMethod}
+                              </span>
+                            </p>
+                            <p className="flex justify-between text-sm">
+                              <span className="text-gray-600">Status:</span>
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  order.payment
+                                    ? "bg-green-50 text-green-600"
+                                    : "bg-red-50 text-red-600"
+                                }`}
+                              >
+                                {order.payment ? "Paid" : "Pending"}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-4">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 pb-2">
+                            <Truck className="w-5 h-5 text-emerald-500" />
+                            <h3 className="font-semibold text-gray-800">
+                              Update Status
+                            </h3>
+                          </div>
+                          <select
+                            className="w-full p-3 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
+                            value={order.status}
+                            onChange={(event) =>
+                              statusHandler(event, order._id)
+                            }
+                          >
+                            <option value="orderPlaced">Order Placed</option>
+                            <option value="Packing">Packing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Out for delivery">
+                              Out for delivery
+                            </option>
+                            <option value="Delivered">Delivered</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Desktop Layout */}
+                    <div className="hidden md:grid md:grid-cols-4 gap-6 p-6">
+                      {/* Order Items Section */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 border-b pb-3">
+                          <Package className="w-5 h-5 text-indigo-500" />
+                          <h3 className="font-semibold text-gray-800">
+                            Order Items
+                          </h3>
+                        </div>
+                        <div className="space-y-4">
+                          {order.items.map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-3">
+                              <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-800">
+                                  {item.name}{" "}
+                                  <span className="text-indigo-500">×</span>{" "}
+                                  {item.quantity}
+                                </p>
+                                <span className="text-xs px-2 py-1 bg-indigo-50 rounded-full text-indigo-600 font-medium">
+                                  {item.size}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Customer Details Section */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 border-b pb-3">
+                          <User className="w-5 h-5 text-rose-500" />
+                          <h3 className="font-semibold text-gray-800">
+                            Delivery Address
+                          </h3>
+                        </div>
+                        <div className="space-y-3">
+                          <p className="font-medium text-gray-800 flex items-center gap-1">
+                            {order.address.firstName} {order.address.lastName}
+                          </p>
+                          <div className="text-sm text-gray-600 space-y-2 pl-1 border-l-2 border-rose-100 ml-1">
+                            <p>{order.address.streetAddress}</p>
+                            <p>
+                              {order.address.city}, {order.address.state}
+                            </p>
+                            <p>
+                              {order.address.pinCode}, {order.address.country}
+                            </p>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-2 flex items-center gap-2">
+                            <span className="inline-block w-5 h-5 rounded-full bg-rose-50 flex items-center justify-center">
+                              <span className="text-xs text-rose-500">☎</span>
+                            </span>
+                            {order.address.phoneNumber}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Order Details Section */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 border-b pb-3">
+                          <ShoppingBag className="w-5 h-5 text-amber-500" />
+                          <h3 className="font-semibold text-gray-800">
+                            Order Info
+                          </h3>
+                        </div>
+                        <div className="space-y-3 text-sm">
+                          <p className="flex justify-between items-center">
+                            <span className="text-gray-600">Total Items:</span>
+                            <span className="font-medium text-gray-800 bg-amber-50 px-2 py-1 rounded">
+                              {order.items.length}
+                            </span>
+                          </p>
+                          <p className="flex justify-between items-center">
+                            <span className="text-gray-600">
+                              Payment Method:
+                            </span>
+                            <span className="font-medium text-gray-800">
+                              {order.paymentMethod}
+                            </span>
+                          </p>
+                          <p className="flex justify-between items-center">
+                            <span className="text-gray-600">
+                              Payment Status:
+                            </span>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                order.payment
+                                  ? "bg-green-50 text-green-600"
+                                  : "bg-red-50 text-red-600"
+                              }`}
+                            >
+                              {order.payment ? "Paid" : "Pending"}
+                            </span>
+                          </p>
+                          <p className="flex justify-between items-center">
+                            <span className="text-gray-600 flex items-center gap-1">
+                              <Calendar className="w-4 h-4 text-amber-500" />{" "}
+                              Date:
+                            </span>
+                            <span className="font-medium text-gray-800">
+                              {new Date(order.date).toLocaleDateString()}
+                            </span>
+                          </p>
+                          <div className="pt-3 mt-3 border-t">
+                            <p className="text-xl font-bold text-gray-800 flex items-center justify-between">
+                              <span>Total:</span>
+                              <span className="text-amber-600">
+                                {currency} {order.amount}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status Section */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 border-b pb-3">
+                          <Truck className="w-5 h-5 text-emerald-500" />
+                          <h3 className="font-semibold text-gray-800">
+                            Order Status
+                          </h3>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <div className="w-full h-2 rounded-full bg-gray-100 relative overflow-hidden">
+                            <div
+                              className={`absolute left-0 top-0 h-full ${getStatusColor(
+                                order.status
+                              )}`}
+                              style={{
+                                width:
+                                  order.status === "orderPlaced"
+                                    ? "20%"
+                                    : order.status === "Packing"
+                                    ? "40%"
+                                    : order.status === "Shipped"
+                                    ? "60%"
+                                    : order.status === "Out for delivery"
+                                    ? "80%"
+                                    : "100%",
+                              }}
+                            ></div>
+                          </div>
+                          <select
+                            className="w-full p-3 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
+                            value={order.status}
+                            onChange={(event) =>
+                              statusHandler(event, order._id)
+                            }
+                          >
+                            <option value="orderPlaced">Order Placed</option>
+                            <option value="Packing">Packing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Out for delivery">
+                              Out for delivery
+                            </option>
+                            <option value="Delivered">Delivered</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-center py-16 bg-white rounded-xl shadow flex flex-col items-center justify-center">
                 <Package className="w-16 h-16 text-gray-300 mb-4" />

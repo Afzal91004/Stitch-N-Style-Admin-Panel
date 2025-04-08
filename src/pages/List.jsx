@@ -557,115 +557,118 @@ const List = ({ token }) => {
             </div>
           ) : (
             <div className="flex flex-col gap-3 md:gap-4">
-              {filteredList.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-xl border border-gray-100 hover:border-pink-100 hover:shadow-md transition-all duration-300 overflow-hidden"
-                >
-                  {/* Mobile View */}
-                  <div className="md:hidden">
-                    <div className="flex items-start p-4">
-                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm flex-shrink-0">
+              {filteredList
+                .slice()
+                .reverse()
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl border border-gray-100 hover:border-pink-100 hover:shadow-md transition-all duration-300 overflow-hidden"
+                  >
+                    {/* Mobile View */}
+                    <div className="md:hidden">
+                      <div className="flex items-start p-4">
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm flex-shrink-0">
+                          <img
+                            src={item.image[0]}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <div className="flex justify-between">
+                            <h3 className="font-medium text-gray-900 mb-1 pr-2">
+                              {item.name}
+                            </h3>
+                            <button
+                              className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                              title="Delete product"
+                              onClick={() => removeProduct(item._id)}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {item.bestSeller && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                Best Seller
+                              </span>
+                            )}
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-50 text-pink-600">
+                              {item.category}
+                            </span>
+                          </div>
+                          <p className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                            <span>{currency}</span> {item.price}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex border-t border-gray-100">
+                        <button
+                          className="flex-1 p-2 text-pink-600 hover:bg-pink-50 font-medium text-sm flex justify-center items-center gap-1"
+                          onClick={() => handleEdit(item)}
+                        >
+                          <Edit2 size={16} /> Edit
+                        </button>
+                        <div className="w-px bg-gray-100"></div>
+                        <button className="flex-1 p-2 text-gray-600 hover:bg-gray-50 font-medium text-sm flex justify-center items-center gap-1">
+                          <Download size={16} /> Export
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Desktop View */}
+                    <div className="hidden md:grid md:grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-4 items-center p-4">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
                         <img
                           src={item.image[0]}
                           alt={item.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <div className="ml-4 flex-1">
-                        <div className="flex justify-between">
-                          <h3 className="font-medium text-gray-900 mb-1 pr-2">
-                            {item.name}
-                          </h3>
-                          <button
-                            className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                            title="Delete product"
-                            onClick={() => removeProduct(item._id)}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mb-2">
+                      <div className="space-y-1">
+                        <h3 className="font-medium text-gray-900 flex items-center">
+                          {item.name}
                           {item.bestSeller && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                               Best Seller
                             </span>
                           )}
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-50 text-pink-600">
-                            {item.category}
-                          </span>
-                        </div>
-                        <p className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                          <span>{currency}</span> {item.price}
+                        </h3>
+                        <p className="text-sm text-gray-500 line-clamp-1">
+                          {item.description}
                         </p>
                       </div>
-                    </div>
-                    <div className="flex border-t border-gray-100">
-                      <button
-                        className="flex-1 p-2 text-pink-600 hover:bg-pink-50 font-medium text-sm flex justify-center items-center gap-1"
-                        onClick={() => handleEdit(item)}
-                      >
-                        <Edit2 size={16} /> Edit
-                      </button>
-                      <div className="w-px bg-gray-100"></div>
-                      <button className="flex-1 p-2 text-gray-600 hover:bg-gray-50 font-medium text-sm flex justify-center items-center gap-1">
-                        <Download size={16} /> Export
-                      </button>
-                    </div>
-                  </div>
 
-                  {/* Desktop View */}
-                  <div className="hidden md:grid md:grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-4 items-center p-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
-                      <img
-                        src={item.image[0]}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="font-medium text-gray-900 flex items-center">
-                        {item.name}
-                        {item.bestSeller && (
-                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                            Best Seller
-                          </span>
-                        )}
-                      </h3>
-                      <p className="text-sm text-gray-500 line-clamp-1">
-                        {item.description}
+                      <div>
+                        <span className="px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-xs font-medium">
+                          {item.category}
+                        </span>
+                      </div>
+
+                      <p className="font-medium text-gray-700">
+                        {currency} {item.price}
                       </p>
-                    </div>
 
-                    <div>
-                      <span className="px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-xs font-medium">
-                        {item.category}
-                      </span>
-                    </div>
-
-                    <p className="font-medium text-gray-700">
-                      {currency} {item.price}
-                    </p>
-
-                    <div className="flex justify-center gap-2">
-                      <button
-                        className="p-2 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors duration-200 border border-transparent hover:border-pink-100"
-                        title="Edit product"
-                        onClick={() => handleEdit(item)}
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 border border-transparent hover:border-red-100"
-                        title="Delete product"
-                        onClick={() => removeProduct(item._id)}
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <div className="flex justify-center gap-2">
+                        <button
+                          className="p-2 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors duration-200 border border-transparent hover:border-pink-100"
+                          title="Edit product"
+                          onClick={() => handleEdit(item)}
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 border border-transparent hover:border-red-100"
+                          title="Delete product"
+                          onClick={() => removeProduct(item._id)}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
 
